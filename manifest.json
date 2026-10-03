@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.marlon.cpu-temperature",
+  "name": "CPU Temperature",
+  "version": "1.0.0",
+  "author": "Marlon",
+  "license": "MIT",
+  "description": "Live CPU temperature with a rolling 24-hour history graph.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "CPU Temperature",
+    "description": "Current CPU temperature and a 24-hour graph.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
