@@ -54,7 +54,7 @@ BarWidget {
     anchors.fill: parent
     bar: root.bar
     text: panelLoader.item ? panelLoader.item.temperatureLabel : "CPU —"
-    tooltipText: panelLoader.item ? panelLoader.item.tooltipText : "Temperatura da CPU"
+    tooltipText: panelLoader.item ? panelLoader.item.tooltipText : "CPU temperature"
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.LeftButton) root.toggle()
     }

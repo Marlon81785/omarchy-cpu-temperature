@@ -8,11 +8,11 @@ import time
 
 
 HISTORY_SECONDS = 30 * 24 * 60 * 60
-LIVE_HISTORY_SECONDS = 30 * 60
+LIVE_HISTORY_SECONDS = 15 * 60
 MAX_GRAPH_POINTS = 1800
 RANGE_SECONDS = {
     "live": LIVE_HISTORY_SECONDS,
-    "30m": 30 * 60,
+    "15m": 15 * 60,
     "24h": 24 * 60 * 60,
     "7d": 7 * 24 * 60 * 60,
     "30d": 30 * 24 * 60 * 60,
@@ -81,9 +81,9 @@ def read_history(path):
                 timestamp = int(record["timestamp"])
                 temperature = float(record["temperature"])
             except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
-                raise RuntimeError(f"Histórico inválido na linha {line_number}: {error}") from error
+                raise RuntimeError(f"Invalid history at line {line_number}: {error}") from error
             if not valid_temperature(temperature):
-                raise RuntimeError(f"Temperatura inválida na linha {line_number}.")
+                raise RuntimeError(f"Invalid temperature at line {line_number}.")
             records.append({"timestamp": timestamp, "temperature": temperature})
     return records
 
@@ -113,14 +113,20 @@ def main():
     temperature = cpu_temperature()
     selected_range = sys.argv[1] if len(sys.argv) > 1 else "24h"
     if selected_range not in RANGE_SECONDS:
-        raise RuntimeError(f"Período de histórico inválido: {selected_range}")
+        raise RuntimeError(f"Invalid history range: {selected_range}")
     live_capture = len(sys.argv) > 2 and sys.argv[2] == "live"
-    history_path = LIVE_HISTORY_FILE if selected_range in ("live", "30m") else HISTORY_FILE
+    try:
+        capture_interval = int(sys.argv[3]) if len(sys.argv) > 3 else 2
+    except ValueError as error:
+        raise RuntimeError("Invalid capture interval.") from error
+    if capture_interval < 1 or capture_interval > 10:
+        raise RuntimeError("Capture interval must be between 1 and 10 seconds.")
+    history_path = LIVE_HISTORY_FILE if selected_range in ("live", "15m") else HISTORY_FILE
     marker_path = LIVE_PRUNED_FILE if history_path == LIVE_HISTORY_FILE else PRUNED_FILE
     retention = LIVE_HISTORY_SECONDS if history_path == LIVE_HISTORY_FILE else HISTORY_SECONDS
     records = read_history(history_path)
 
-    minimum_interval = 1 if live_capture else 9
+    minimum_interval = capture_interval if live_capture else 9
     if (live_capture or history_path == HISTORY_FILE) and (
         not records or now - records[-1]["timestamp"] >= minimum_interval
     ):
