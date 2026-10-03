@@ -1,5 +1,7 @@
 # CPU Temperature
 
+![CPU Temperature widget preview](preview.png)
+
 An Omarchy Quickshell bar widget for monitoring CPU temperature. The right-side
 bar button shows the current reading; click it to open a smooth, temperature-
 scaled chart.
